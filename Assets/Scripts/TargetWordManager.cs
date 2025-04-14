@@ -2,20 +2,38 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class TargetWordManager : MonoBehaviour
 {
-    [SerializeField] private List<string> _wordList; // Fill this in the Inspector with 4-letter words
     [SerializeField] private TextMeshProUGUI _targetWordText;
     [SerializeField] private TextMeshProUGUI _collectedLettersText;
+    [SerializeField] private WordFetcher _wordFetcher;
 
     public string _targetWord;
-    private HashSet<char> _collectedLetters = new();
+    private readonly HashSet<char> _collectedLetters = new();
 
     public string TargetWord => _targetWord;
     public IReadOnlyCollection<char> CollectedLetters => _collectedLetters;
 
     public static TargetWordManager Instance { get; private set; }
+
+    IEnumerator WaitForWord()
+    {
+        while (!_wordFetcher.IsReady)
+            yield return null;
+
+        string word = _wordFetcher.TargetWord;
+        SetTargetWord(word);
+        UpdateWordDisplay();
+        //_targetWordText.text = _targetWord;
+    }
+
+    void SetTargetWord(string word)
+    {
+        _targetWord = word;
+    }
+
 
     private void Awake()
     {
@@ -26,22 +44,7 @@ public class TargetWordManager : MonoBehaviour
 
     void Start()
     {
-        GenerateDailyWord();
-        UpdateWordDisplay();
-    }
-
-    void GenerateDailyWord()
-    {
-        if (_wordList.Count == 0)
-        {
-            Debug.LogWarning("Word list is empty!");
-            _targetWord = "NULL";
-            return;
-        }
-
-        DateTime start = new(2022, 1, 1);
-        int dayOffset = (int)(DateTime.Today - start).TotalDays;
-        _targetWord = _wordList[dayOffset % _wordList.Count].ToUpper();
+        StartCoroutine(WaitForWord());
     }
 
     public bool TryCollectLetter(char letter)

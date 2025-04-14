@@ -163,13 +163,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 038028773fb15774bb6e867e8b021bf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _wordList:
-  - ABCD
-  - BCDE
-  - CDEF
-  - DEFG
   _targetWordText: {fileID: 1988110461}
   _collectedLettersText: {fileID: 274845216}
+  _wordFetcher: {fileID: 1192362722}
   _targetWord: 
 --- !u!1 &240610378
 GameObject:
@@ -217,6 +213,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _targetWord: 
   _activeBlocks: []
+  _maxSpawnLetter: 66
 --- !u!1 &255188868
 GameObject:
   m_ObjectHideFlags: 0
@@ -892,6 +889,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!1 &1192362721
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1192362723}
+  - component: {fileID: 1192362722}
+  m_Layer: 0
+  m_Name: WordFetcher
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1192362722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1192362721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aa2e0ae98617724aadfdcb373bdfe48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wordListUrl: https://raw.githubusercontent.com/abhigyan04/letter-shift/refs/heads/main/Assets/Data/wordlist.txt
+--- !u!4 &1192362723
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1192362721}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 912.56793, y: 505.0545, z: -6.243222}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1333649304
 GameObject:
   m_ObjectHideFlags: 0
@@ -1480,3 +1522,4 @@ SceneRoots:
   - {fileID: 1560252840}
   - {fileID: 124570878}
   - {fileID: 240610379}
+  - {fileID: 1192362723}
