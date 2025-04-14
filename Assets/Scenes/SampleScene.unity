@@ -439,10 +439,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfed572cd1b52f84bb5999c464f262cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backgroundTilePrefab: {fileID: 5297649441902835493, guid: 524d87449663d854783a6748641eb0cb, type: 3}
-  letterTilePrefab: {fileID: 6657321689658336635, guid: 4c97fa792a1719c4a8082cc262419998, type: 3}
+  tilePrefab: {fileID: 8299444468461211851, guid: 4c97fa792a1719c4a8082cc262419998, type: 3}
+  gridPrefab: {fileID: 2982683879996871130, guid: 524d87449663d854783a6748641eb0cb, type: 3}
+  gridParent: {fileID: 576588090}
   backgroundParent: {fileID: 229905774}
-  letterParent: {fileID: 576588090}
   gridSize: 5
 --- !u!4 &697933139
 Transform:
@@ -453,7 +453,7 @@ Transform:
   m_GameObject: {fileID: 697933137}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 171.7394, y: 230.28633, z: 0.33335364}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
