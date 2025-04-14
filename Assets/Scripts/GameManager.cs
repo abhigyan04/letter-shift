@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -16,6 +14,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private SpriteRenderer _boardPrefab;
     [SerializeField] private List<BlockType> _types;
     [SerializeField] private float _travelTime = 0.2f;
+    [SerializeField] private LetterSpawner _letterSpawner;
+    [SerializeField] private Transform _boardShakeTarget;
+
 
     [SerializeField] private GameObject _winScreen, _loseScreen;
     
@@ -40,6 +41,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         ChangeState(GameState.GenerateLevel);
+        _letterSpawner.SetTargetWord(TargetWordManager.Instance.TargetWord);
     }
 
     private void ChangeState(GameState newState)
@@ -105,12 +107,24 @@ public class GameManager : MonoBehaviour
 
     void SpawnBlocks(int amount)
     {
+        _letterSpawner.UpdateBlockList(_blocks);
 
         var freeNodes = _nodes.Where(n => n.OccupiedBlock == null).OrderBy(b => Random.value).ToList();
 
-        foreach (var node in freeNodes.Take(amount))
+        if(amount == 2)
         {
-            SpawnBlock(node, Random.value > 0.8f ? 'B' : 'A');
+            foreach(var node in freeNodes.Take(2))
+            {
+                SpawnBlock(node, Random.value > 0.8 ? 'B' : 'A');
+            }
+        }
+        else if(amount == 1)
+        {
+            foreach (var node in freeNodes.Take(1))
+            {
+                char letterToSpawn = _letterSpawner.GetLetterToSpawn();
+                SpawnBlock(node, letterToSpawn);
+            }
         }
 
         if (freeNodes.Count() == 1)
@@ -128,11 +142,20 @@ public class GameManager : MonoBehaviour
         block.Init(GetBlockTypeByLetter(letter));
         block.SetBlock(node);
         _blocks.Add(block);
+
+        if(TargetWordManager.Instance._targetWord.Contains(letter))
+        {
+            block.transform.localScale = Vector3.zero;
+            block.transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.OutBack);
+        }
     }
     
     void Shift(Vector2 dir)
     {
         ChangeState(GameState.Moving);
+
+        bool hasMoved = false;
+        bool hasMerged = false;
 
         var orderedBlocks = _blocks.OrderBy(b => b.Pos.x).ThenBy(b => b.Pos.y).ToList();
         if (dir == Vector2.right || dir == Vector2.up) orderedBlocks.Reverse();
@@ -152,11 +175,19 @@ public class GameManager : MonoBehaviour
                     if (possibleNode.OccupiedBlock != null && possibleNode.OccupiedBlock.CanMerge(block.Letter))
                     {
                         block.MergeBlock(possibleNode.OccupiedBlock);
+                        hasMerged = true;
+                        break;
                     }
                     // Otherwise, can we move to this spot?
-                    else if (possibleNode.OccupiedBlock == null) next = possibleNode;
-
-                    // None hit? End do while loop
+                    else if (possibleNode.OccupiedBlock == null)
+                    {
+                        next = possibleNode;
+                        hasMoved = true;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             } while (next != block.Node);
         }
@@ -176,7 +207,15 @@ public class GameManager : MonoBehaviour
             {
                 MergeBlocks(block.MergingBlock, block);
             }
-            ChangeState(GameState.SpawningBlocks);
+            if (hasMoved || hasMerged)
+            {
+                ChangeState(GameState.SpawningBlocks);
+            }
+            else
+            {
+                DoShake();
+                ChangeState(GameState.WaitingInput);
+            }
         });
     }
 
@@ -202,6 +241,19 @@ public class GameManager : MonoBehaviour
         return _nodes.FirstOrDefault(n => n.Pos == pos);
     }
 
+    void DoShake()
+    {
+        if (_boardShakeTarget == null) return;
+
+        _boardShakeTarget.DOShakePosition(
+            duration: 0.2f,
+            strength: new Vector3(0.1f, 0.1f, 0),
+            vibrato: 10,
+            randomness: 90,
+            snapping: false,
+            fadeOut: true
+        );
+    }
 }
 
 [Serializable]

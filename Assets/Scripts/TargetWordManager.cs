@@ -9,7 +9,7 @@ public class TargetWordManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _targetWordText;
     [SerializeField] private TextMeshProUGUI _collectedLettersText;
 
-    private string _targetWord;
+    public string _targetWord;
     private HashSet<char> _collectedLetters = new();
 
     public string TargetWord => _targetWord;
