@@ -37,4 +37,22 @@ public class Block : MonoBehaviour
     {
         return Letter == otherLetter && !Merging && MergingBlock == null && Letter < 'Z';
     }
+
+    private void OnMouseDown()
+    {
+        //Only allow clicking when game is accepting input
+        if(GameManager.Instance == null || GameManager.Instance.CurrentState != GameState.WaitingInput) return;
+
+        bool collected = TargetWordManager.Instance.TryCollectLetter(Letter);
+
+        if(collected)
+        {
+            GameManager.Instance.RemoveBlock(this);
+            Debug.Log("Letter collected!");
+        }
+        else
+        {
+            Debug.Log("Letter not in target word");
+        }
+    }
 }

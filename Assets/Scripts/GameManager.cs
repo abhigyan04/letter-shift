@@ -16,7 +16,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private SpriteRenderer _boardPrefab;
     [SerializeField] private List<BlockType> _types;
     [SerializeField] private float _travelTime = 0.2f;
-    [SerializeField] private int _winCondition = 2048;
 
     [SerializeField] private GameObject _winScreen, _loseScreen;
     
@@ -25,7 +24,18 @@ public class GameManager : MonoBehaviour
     private GameState _state;
     private int _round;
 
-    private BlockType GetBlockTypeByValue(char letter) => _types.First(t => t.Letter == letter);
+    private BlockType GetBlockTypeByLetter(char letter) => _types.First(t => t.Letter == letter);
+
+    public static GameManager Instance { get; private set; }
+
+    public GameState CurrentState => _state;
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
+
 
     void Start()
     {
@@ -88,7 +98,7 @@ public class GameManager : MonoBehaviour
         var board = Instantiate(_boardPrefab, center, Quaternion.identity);
         board.size = new Vector2(_width, _height);
 
-        Camera.main.transform.position = new Vector3(center.x, center.y, -10);
+        Camera.main.transform.position = new Vector3(center.x, center.y + 1.0f, -10);
 
         ChangeState(GameState.SpawningBlocks);
     }
@@ -100,7 +110,7 @@ public class GameManager : MonoBehaviour
 
         foreach (var node in freeNodes.Take(amount))
         {
-            SpawnBlock(node, 'A');
+            SpawnBlock(node, Random.value > 0.8f ? 'B' : 'A');
         }
 
         if (freeNodes.Count() == 1)
@@ -109,13 +119,13 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        ChangeState(_blocks.Any(b => b.Letter == _winCondition) ? GameState.Win : GameState.WaitingInput);
+        ChangeState(TargetWordManager.Instance.IsWordComplete() ? GameState.Win : GameState.WaitingInput);
     }
 
     void SpawnBlock(Node node, char letter)
     {
         var block = Instantiate(_blockPrefab, node.Pos, Quaternion.identity);
-        block.Init(GetBlockTypeByValue(letter));
+        block.Init(GetBlockTypeByLetter(letter));
         block.SetBlock(node);
         _blocks.Add(block);
     }
@@ -148,11 +158,8 @@ public class GameManager : MonoBehaviour
 
                     // None hit? End do while loop
                 }
-
-
             } while (next != block.Node);
         }
-
 
         var sequence = DOTween.Sequence();
 
@@ -184,7 +191,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void RemoveBlock(Block block)
+    public void RemoveBlock(Block block)
     {
         _blocks.Remove(block);
         Destroy(block.gameObject);
