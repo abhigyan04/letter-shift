@@ -57,6 +57,7 @@ public class TargetWordManager : MonoBehaviour
             {
                 Debug.Log("Player completed the word!");
                 // Notify GameManager or trigger win condition here
+                GameManager.Instance.ForceWin();
             }
 
             return true;

@@ -9,6 +9,8 @@ public class LetterSpawner : MonoBehaviour
 
     [SerializeField] private List<Block> _activeBlocks = new();
 
+    public char _maxSpawnLetter = 'B';
+
     public void SetTargetWord(string word)
     {
         _targetWord = word.ToUpper();
@@ -19,36 +21,31 @@ public class LetterSpawner : MonoBehaviour
         _activeBlocks = currentBlocks;
     }
 
+    public void UnlockNextLetter()
+    {
+        if (_maxSpawnLetter < 'Z')
+        {
+            _maxSpawnLetter = (char)(_maxSpawnLetter + 1);
+            Debug.Log("New spawn letter unlocked");
+        }
+    }
+
     public char GetLetterToSpawn()
     {
-        // Always start with A and B
-        char baseMax = 'B';
-
-        if (_activeBlocks.Count > 0)
-        {
-            // Get highest letter on the board
-            char highestLetterOnBoard = _activeBlocks.Max(b => b.Letter);
-
-            // Unlock next letter beyond highest on board, capped at Z
-            baseMax = (char)Mathf.Min('Z', highestLetterOnBoard + 1);
-        }
-
-        // Build spawnable list from 'A' to baseMax
         List<char> spawnableLetters = new();
-        for (char c = 'A'; c <= baseMax; c++)
+
+        for (char c = 'A'; c <= _maxSpawnLetter; c++)
         {
-            // Don't include letters that are in the target word
             if (!_targetWord.Contains(c))
             {
                 spawnableLetters.Add(c);
             }
         }
 
-        // If somehow all allowed letters are filtered out (e.g. target is ABC),
-        // fall back to just 'A'
         if (spawnableLetters.Count == 0)
         {
-            spawnableLetters.Add('A');
+            Debug.LogWarning("No valid letters to spawn - defaulting to 'A'");
+            return 'A';
         }
 
         return spawnableLetters[Random.Range(0, spawnableLetters.Count)];

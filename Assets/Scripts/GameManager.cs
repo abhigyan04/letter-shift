@@ -133,7 +133,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        ChangeState(TargetWordManager.Instance.IsWordComplete() ? GameState.Win : GameState.WaitingInput);
+        ChangeState(GameState.WaitingInput);
     }
 
     void SpawnBlock(Node node, char letter)
@@ -228,6 +228,27 @@ public class GameManager : MonoBehaviour
         RemoveBlock(baseBlock);
         RemoveBlock(mergingBlock);
 
+        switch(newLetter)
+        {
+            case 'G':
+                if(_letterSpawner._maxSpawnLetter == 'B')
+                    _letterSpawner.UnlockNextLetter();
+                break;
+            case 'M':
+                if (_letterSpawner._maxSpawnLetter == 'C')
+                    _letterSpawner.UnlockNextLetter();
+                break;
+            case 'R':
+                if (_letterSpawner._maxSpawnLetter == 'D')
+                    _letterSpawner.UnlockNextLetter();
+                break;
+            case 'U':
+                if (_letterSpawner._maxSpawnLetter == 'E')
+                    _letterSpawner.UnlockNextLetter();
+                break;
+            default:
+                break;
+        }
     }
 
     public void RemoveBlock(Block block)
@@ -253,6 +274,14 @@ public class GameManager : MonoBehaviour
             snapping: false,
             fadeOut: true
         );
+    }
+
+    public void ForceWin()
+    {
+        if(_state != GameState.Win && _state != GameState.Lose)
+        {
+            ChangeState(GameState.Win);
+        }
     }
 }
 
