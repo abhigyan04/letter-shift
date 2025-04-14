@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float _travelTime = 0.2f;
     [SerializeField] private LetterSpawner _letterSpawner;
     [SerializeField] private Transform _boardShakeTarget;
+    [SerializeField] private GameObject gameAssets;
 
 
     [SerializeField] private GameObject _winScreen, _loseScreen;
@@ -24,6 +25,7 @@ public class GameManager : MonoBehaviour
     private List<Block> _blocks;
     private GameState _state;
     private int _round;
+    private bool inputEnabled = true;
 
     private BlockType GetBlockTypeByLetter(char letter) => _types.First(t => t.Letter == letter);
 
@@ -40,8 +42,13 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        ChangeState(GameState.GenerateLevel);
+        ChangeState(GameState.BeforeStart);
         _letterSpawner.SetTargetWord(TargetWordManager.Instance.TargetWord);
+    }
+
+    public void StartGame()
+    {
+        ChangeState(GameState.GenerateLevel);
     }
 
     private void ChangeState(GameState newState)
@@ -50,6 +57,8 @@ public class GameManager : MonoBehaviour
 
         switch (newState)
         {
+            case GameState.BeforeStart:
+                break;
             case GameState.GenerateLevel:
                 GenerateGrid();
                 break;
@@ -71,14 +80,47 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void DisableInput()
+    {
+        inputEnabled = false;
+    }
+
+    public void EnableInput()
+    {
+        inputEnabled = true;
+    }
+
     void Update()
     {
-        if (_state != GameState.WaitingInput) return;
+        if (_state != GameState.WaitingInput || !inputEnabled) return;
 
         if (Input.GetKeyDown(KeyCode.LeftArrow)) Shift(Vector2.left);
         if (Input.GetKeyDown(KeyCode.RightArrow)) Shift(Vector2.right);
         if (Input.GetKeyDown(KeyCode.UpArrow)) Shift(Vector2.up);
         if (Input.GetKeyDown(KeyCode.DownArrow)) Shift(Vector2.down);
+    }
+
+    public void ResetGame()
+    {
+        foreach(var block in _blocks.ToList())
+        {
+            RemoveBlock(block);
+        }
+        _blocks.Clear();
+
+        foreach (var node in _nodes.ToList())
+        {
+            Destroy(node.gameObject);
+        }
+        _nodes.Clear();
+
+        _round = 0;
+
+        inputEnabled = true;
+
+        ChangeState(GameState.BeforeStart);
+
+        TargetWordManager.Instance.ResetWord();
     }
 
     void GenerateGrid()
@@ -90,14 +132,14 @@ public class GameManager : MonoBehaviour
         {
             for (int y = 0; y < _height; y++)
             {
-                var node = Instantiate(_nodePrefab, new Vector2(x, y), Quaternion.identity);
+                var node = Instantiate(_nodePrefab, new Vector2(x, y), Quaternion.identity, gameAssets.transform);
                 _nodes.Add(node);
             }
         }
 
         var center = new Vector2((float)_width / 2 - 0.5f, (float)_height / 2 - 0.5f);
 
-        var board = Instantiate(_boardPrefab, center, Quaternion.identity);
+        var board = Instantiate(_boardPrefab, center, Quaternion.identity, gameAssets.transform);
         board.size = new Vector2(_width, _height);
 
         Camera.main.transform.position = new Vector3(center.x, center.y + 1.0f, -10);
@@ -138,7 +180,7 @@ public class GameManager : MonoBehaviour
 
     void SpawnBlock(Node node, char letter)
     {
-        var block = Instantiate(_blockPrefab, node.Pos, Quaternion.identity);
+        var block = Instantiate(_blockPrefab, node.Pos, Quaternion.identity, gameAssets.transform);
         block.Init(GetBlockTypeByLetter(letter));
         block.SetBlock(node);
         _blocks.Add(block);
@@ -294,6 +336,7 @@ public struct BlockType
 
 public enum GameState
 {
+    BeforeStart,
     GenerateLevel,
     SpawningBlocks,
     WaitingInput,

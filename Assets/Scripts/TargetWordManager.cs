@@ -92,4 +92,10 @@ public class TargetWordManager : MonoBehaviour
 
         _collectedLettersText.text = display.Trim();
     }
+
+    public void ResetWord()
+    {
+        _collectedLetters.Clear();
+        StartCoroutine(WaitForWord());
+    }
 }
