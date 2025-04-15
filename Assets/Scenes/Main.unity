@@ -1886,6 +1886,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1379330615}
   - component: {fileID: 1379330616}
+  - component: {fileID: 1379330617}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1984,6 +1985,19 @@ MonoBehaviour:
   gameAssets: {fileID: 2056803872}
   _winScreen: {fileID: 255188868}
   _loseScreen: {fileID: 345539250}
+--- !u!114 &1379330617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379330614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffdfe6b77837bd14aab1a5c9754cf05e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  swipeThreshold: 50
 --- !u!1 &1437533856
 GameObject:
   m_ObjectHideFlags: 0
