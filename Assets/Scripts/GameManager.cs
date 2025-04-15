@@ -17,8 +17,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private LetterSpawner _letterSpawner;
     [SerializeField] private Transform _boardShakeTarget;
     [SerializeField] private GameObject gameAssets;
-
-
     [SerializeField] private GameObject _winScreen, _loseScreen;
     
     private List<Node> _nodes;
@@ -38,7 +36,6 @@ public class GameManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
-
 
     void Start()
     {
