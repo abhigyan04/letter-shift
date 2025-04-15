@@ -191,6 +191,14 @@ public class GameManager : MonoBehaviour
             block.transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.OutBack);
         }
     }
+
+    public void ShiftInput(Vector2 direction)
+    {
+        if (_state == GameState.WaitingInput && inputEnabled)
+        {
+            Shift(direction);
+        }
+    }
     
     void Shift(Vector2 dir)
     {
